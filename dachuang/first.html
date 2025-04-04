@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>寻“艾”传“蕲”</title>
+    <style>
+        /* 新增全局字体设置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: #f0fff0;
+            font-family: 'Microsoft YaHei', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 16px;  /* 统一正文字号 */
+            line-height: 1.6; /* 统一行高 */
+            color: #333;     /* 统一正文字色 */
+        }
+
+        /* 新增全局标题样式 */
+        h2 {
+            color: #2c5f2d !important; /* 统一标题绿色 */
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .carousel {
+            width: 85%;
+            height: 45vh;
+            margin: 20px 0;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,100,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        .carousel-nav {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .nav-dot.active {
+            background: #fff;
+            transform: scale(1.2);
+        }
+
+        .carousel-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            z-index: 2;
+        }
+
+        .carousel-arrow:hover {
+            background: rgba(255,255,255,0.8);
+        }
+
+        .carousel-prev { left: 10px; }
+        .carousel-next { right: 10px; }
+
+        .carousel-arrow::before {
+            content: '';
+            width: 12px;
+            height: 12px;
+            border: 2px solid #2c5f2d;
+            border-width: 2px 2px 0 0;
+        }
+
+        .carousel-prev::before { transform: rotate(-135deg); }
+        .carousel-next::before { transform: rotate(45deg); }
+
+        .modules {
+            width: 80%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 0 auto;
+        }
+
+        .module {
+            width: 100%;
+            padding: 30px;
+            border-radius: 12px;
+            min-height: 200px;
+            box-shadow: 0 8px 15px rgba(0, 100, 0, 0.1);
+        }
+
+        #intro-module {
+            border-left: 5px solid #4CAF50;
+            overflow: hidden;
+            padding: 25px;
+        }
+
+        .intro-content {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+        }
+
+        .intro-image {
+            width: 280px;
+            height: auto;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* 移除原有h2颜色设置 */
+        .intro-text {
+            flex: 1;
+            line-height: 1.8;
+        }
+
+        #history-module {
+            border: 2px dashed #8BC34A;
+            padding-left: 80px;
+        }
+        #team-module {
+            text-align: left;
+            padding: 50px;
+        }
+        #product-module {
+            border: 3px solid #8BC34A;
+            padding-top: 60px;
+        }
+        .product-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .product-item {
+            background: #f8fff8;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+            transition: all 0.3s;
+        }
+
+        .product-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(139,195,74,0.1);
+        }
+
+        .product-img {
+            flex: 0 0 200px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #c8e6c9;
+        }
+
+        .product-img img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .product-info {
+            flex: 1;
+        }
+
+        /* 保留产品标题特殊样式 */
+        .product-info h3 {
+            color: #2c5f2d;
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .brand-slogan {
+            color: #8BC34A;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .spec {
+            display: flex;
+            gap: 15px;
+            margin: 12px 0;
+            color: #666;
+        }
+
+        .spec span::before {
+            content: "·";
+            margin-right: 5px;
+        }
+
+        .mascot .product-img {
+            border-color:#c8e6c9;
+        }
+
+        .mascot h3 {
+            color: #2c5f2d;
+        }
+
+        @media (max-width: 768px) {
+            .intro-content {
+                flex-direction: column;
+            }
+            .intro-image {
+                width: 100%;
+                max-width: 300px;
+                margin: 0 auto 20px;
+            }
+            #history-module {
+                padding-left: 30px;
+            }
+            .product-container {
+                grid-template-columns: 1fr;
+            }
+
+            .product-item {
+                flex-direction: column;
+            }
+
+            .product-img {
+                flex: 0 0 auto;
+                height: 200px;
+            }
+
+            .spec {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 保持原有HTML结构不变 -->
+    <div class="carousel">
+        <div class="slide active" style="background-image: url('images/4.png');"></div>
+        <div class="slide" style="background-image: url('images/2.png');"></div>
+        <div class="slide" style="background-image: url('images/3.png');"></div>
+
+        <div class="carousel-arrow carousel-prev"></div>
+        <div class="carousel-arrow carousel-next"></div>
+
+        <div class="carousel-nav">
+            <div class="nav-dot active"></div>
+            <div class="nav-dot"></div>
+            <div class="nav-dot"></div>
+        </div>
+    </div>
+
+    <div class="modules">
+        <div class="module" id="intro-module">
+            <div class="intro-content">
+                <img src="images/5.v2" alt="艾草图片" class="intro-image">
+                <div class="intro-text">
+                    <h2>艾草简介</h2>
+                    <p>艾草（学名：Artemisia argyi H. Lév. & Vaniot）别名：萧茅、冰台、遏草、香艾、蕲艾、艾萧、艾蒿、艾蒿、蓬藁、艾﹑灸草﹑医草﹑黄草﹑艾绒等。多年生草本或略成半灌木状，植株有浓烈香气。茎单生或少数，褐色或灰黄褐色，基部稍木质化，上部萆质，并有少数短的分枝，叶厚纸质，上面被灰白色短柔毛，基部通常无假托叶或极小的假托叶；上部叶与苞片叶羽状半裂、头状花序椭圆形，花冠管状或高脚杯状，外面有腺点，花药狭线形，花柱与花冠近等长或略长于花冠。瘦果长卵形或长圆形。花果期9-10月。全草入药，有温经、去湿、散寒、止血、消炎、平喘、止咳、安胎、抗过敏等作用。艾叶晒干捣碎得“艾绒”，制艾条供艾灸用，又可作“印泥”的原料。分布于亚洲及欧洲地区。</p>
+                </div>
+            </div>
+        </div>
+        <div class="module" id="history-module">
+            <h2>历史文化</h2>
+            <p>在我国采艾治病已有三千多年的历史。孟子曾说："七年之病，求三年之艾。"意思是患了七年的慢性病，用三年陈艾就可以治好。《本草纲目》载："服之则走三阴，逐一切寒湿灸之则透诸经而治百种病邪，起沉疴之人为康泰。"关于艾草能治病的发现，还有一个有趣的传说。
+
+相传唐朝时有一个叫崔炜的书生。有一天，他在集市上看到一位孤苦伶仃的老奶奶。由于很多天没有吃饭，老奶奶饿得头昏眼花，走路摇摇晃晃，竟然撞倒了路边饮酒人的酒杯。那些人气势汹汹地责骂老奶奶，气急之下还想要动手打人。见此情景，崔炜心生同情，虽然身无分文，但还是脱下自己的衣服来偿还酒钱，为老奶奶解了围。可当他转过头来，老奶奶却见了。生性豁达的崔炜毫不在意，拍了拍身上的灰尘就回家了。
+
+当天晚上，崔炜梦见有一条青蛇向他道谢："下午在街上多亏公子搭救，真是非常感激。特地送来一些艾草作为报答。这个艾草妙用无穷，它可以去除各种赘瘤肿块，只要敷上一点点就可以了，不要多用！希望它能帮你完成心愿，娶一房贤妻。"说完，青蛇再次向他拜谢，随后就消失了。崔炜从梦中惊醒，想着梦中的情景，觉得不可思议，伸手一摸床边竟然真的有一束艾草。过了不久，有一位姓任的千金小姐得了一种怪病，头上长了一颗大肿瘤，访遍了各地名医都没能治好，于是贴出告示：只要有人医好小女的病，我愿将女儿许配给他。
+
+崔炜抱着试一试的心态到了任家，给小姐敷上艾草，果然如梦中青蛇所说，不到两天患处就消肿痊愈了。就这样，崔炜娶了温柔可爱的任家小姐为妻，而艾草的药效也被人们广为了解，一直流传至今。</p>
+        </div>
+        <div class="module" id="team-module">
+            <h2>团队简介</h2>
+        </div>
+        <div class="module" id="product-module">
+            <h2>特色产品</h2>
+            <div class="product-container">
+                <div class="product-item">
+                    <div class="product-img">
+                        <img src="图片1.png" alt="艾草品牌标识">
+                    </div>
+                    <div class="product-info">
+                        <h3>品牌LOGO</h3>
+                        <p class="brand-slogan">传承古法 · 创新养生</p>
+                        <p>成立于2010年，专注艾草制品研发生产，通过ISO9001认证的传统养生品牌</p>
+                    </div>
+                </div>
+
+                <div class="product-item mascot">
+                    <div class="product-img">
+                        <img src="8.jpg" alt="艾草宝宝吉祥物">
+                    </div>
+                    <div class="product-info">
+                        <h3>吉祥物</h3>
+                        <p class="brand-slogan">品牌吉祥物</p>
+                        <p>他们都佩戴艾草头饰，身着的服饰也都有艾草图案，绿色的眼睛也与艾草元素相呼应，体现了自然与健康的主题，同时也传达出现代化、环保等理念</p>
+                    </div>
+                </div>
+
+                <div class="product-item">
+                    <div class="product-img">
+                        <img src="images/7.jpg" alt="古法艾灸套装">
+                    </div>
+                    <div class="product-info">
+                        <h3>艾草锤</h3>
+                        <div class="spec">
+                            <span> 舒络筋脉</span>
+                            <span>🌿 三年陈艾</span>
+                        </div>
+                        <p>刺激经络和穴位，促进血液循环，缓解局部淤血和僵硬，温经散寒、祛湿止痛</p>
+                    </div>
+                </div>
+
+                <div class="product-item">
+                    <div class="product-img">
+                        <img src="7.jpg" alt="艾草驱蚊喷雾">
+                    </div>
+                    <div class="product-info">
+                        <h3>养生包</h3>
+                        <div class="spec">
+                            <span>驱散寒气</span>
+                            <span>安神</span>
+                        </div>
+                        <p>通过热敷或佩戴的方式，可以驱散寒气，并且具有安神作用，有助于改善精神压力大的状态</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll(".slide");
+        const dots = document.querySelectorAll(".nav-dot");
+        const prevBtn = document.querySelector(".carousel-prev");
+        const nextBtn = document.querySelector(".carousel-next");
+
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove("active"));
+            dots.forEach(dot => dot.classList.remove("active"));
+            slides[index].classList.add("active");
+            dots[index].classList.add("active");
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        nextBtn.addEventListener("click", nextSlide);
+        prevBtn.addEventListener("click", prevSlide);
+        dots.forEach((dot, index) => {
+            dot.addEventListener("click", () => {
+                currentSlide = index;
+                showSlide(currentSlide);
+            });
+        });
+
+        setInterval(nextSlide, 5000);
+    </script>
+</body>
+</html>
